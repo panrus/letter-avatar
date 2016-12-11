@@ -107,7 +107,18 @@ class LetterAvatar
         $this->size = $size;
     }
 
-
+    /**
+     * @param $char
+     * @param string $encoding
+     * @return null
+     */
+    static public function order($char, $encoding = "UTF-8")
+    {
+        $char = mb_convert_encoding($char, "UCS-4BE", $encoding);
+        $order = unpack("N", $char);
+        return ($order ? $order[1] : null);
+    }
+    
     /**
      * @return \Intervention\Image\Image
      */
@@ -121,7 +132,7 @@ class LetterAvatar
             if ($number_of_word > 2)
                 break;
 
-            $this->name_initials .= strtoupper(trim($word[0]));
+            $this->name_initials .= mb_strtoupper(trim(mb_substr ($word, 0, 1,'UTF-8')));
 
             $number_of_word++;
         }
@@ -129,9 +140,11 @@ class LetterAvatar
         $colors = [
             "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50",
             "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d",
+            "#ef5350", "#ec407a", "#ab47bc", "#7e57c2", "#5c6bc0", "#42a5f5", "#29b6f6", "#26c6da", "#26a69a", "#66bb6a",
+            "#9ccc65", "#d4e157", "#ffca28", "#ffa726", "#ff7043", "#8d6e63", "#bdbdbd", "#78909c", "#43a047", "#0288d1",
         ];
 
-        $char_index  = ord($this->name_initials[0]) - 64;
+        $char_index  = $this->order($this->name_initials) - 44;
         $color_index = $char_index % 20;
         $color       = $colors[$color_index];
 
